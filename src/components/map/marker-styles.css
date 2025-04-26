@@ -1,0 +1,50 @@
+.marker-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.marker-dot::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.custom-marker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animation for available scooters */
+.custom-marker-icon.available .marker-dot {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Popup styling */
+.popup-content {
+  padding: 8px;
+  min-width: 120px;
+}

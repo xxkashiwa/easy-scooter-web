@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import HeaderWithDot from '@/components/header-with-dot';
-import Map from '@/components/map';
+import ScooterMap from '../all-location/scooter-utils/scooter-map';
 
 const HomePage = () => {
   return (
@@ -8,8 +9,8 @@ const HomePage = () => {
         <HeaderWithDot>Scooter Position</HeaderWithDot>
       </div>
       <div className="flex-1 p-4">
-        <div className="h-full overflow-hidden rounded-lg bg-white shadow-md">
-          <Map className="h-full w-full" />
+        <div className="relative h-full overflow-hidden rounded-lg bg-white shadow-md">
+          <ScooterMap className="h-full w-full" />
         </div>
       </div>
     </div>

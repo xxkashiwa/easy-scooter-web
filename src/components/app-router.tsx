@@ -1,6 +1,7 @@
 import AppLayout from '@/app-layout';
 import Allocation from '@/pages/all-location';
 import ListAndSettings from '@/pages/all-location/list-and-settings';
+import NewScooterPage from '@/pages/all-location/list-and-settings/new-scooter-page';
 import NoParkingZones from '@/pages/all-location/no-parking-zones';
 import Discount from '@/pages/discount';
 import Fault from '@/pages/fault';
@@ -37,12 +38,15 @@ const AppRouter = () => {
           element={<ListAndSettings />}
         />
         <Route
+          path="/allocation/new-scooter"
+          element={<NewScooterPage />}
+        />
+        <Route
           path="/allocation/no-parking-zones"
           element={<NoParkingZones />}
         />
         <Route path="/all-location" element={<Allocation />} />{' '}
-        {/* Legacy route */}
-        {/* Income routes */}
+        {/* Legacy route */} {/* Income routes */}
         <Route
           path="/income"
           element={<Navigate to="/income/weekly-income" replace />}

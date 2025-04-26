@@ -24,7 +24,7 @@ interface Fault {
 interface Scooter {
   id: number;
   type: string;
-  status: string;
+  status: 'available' | 'in_use' | 'maintenance' | 'unavailable';
   location: { lat: number; lng: number };
   battery: number;
 }

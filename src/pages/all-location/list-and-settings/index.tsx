@@ -1,18 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import HeaderWithDot from '@/components/header-with-dot';
 import React, { useEffect, useMemo } from 'react';
-import { toast } from 'sonner';
 import useScooterStore from '../scooter-store';
 import ScooterCard from './components/scooter-card';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const ListAndSettings: React.FC = () => {
-  const { scooters, fetchScooters } = useScooterStore();
+  const navigate = useNavigate();
+  const { scooters, scooterAndPrice, fetchScooters, fetchPrice } =
+    useScooterStore();
 
   useEffect(() => {
     fetchScooters().catch(error => {
       console.error('Failed to fetch scooters:', error);
     });
-  }, [fetchScooters]);
+    fetchPrice().catch(error => {
+      console.error('Failed to fetch scooter prices:', error);
+    });
+  }, [fetchScooters, fetchPrice]);
 
   // Function to convert location coordinates to text representation
   const formatLocation = (
@@ -33,44 +39,21 @@ const ListAndSettings: React.FC = () => {
     return { availableScooters: available, unavailableScooters: unavailable };
   }, [scooters]);
 
-  const handleScooterDetail = (id: number) => {
-    console.log(`View detail for scooter ${id}`);
-    toast.info(`Viewing details for scooter #${id}`);
-    // Handle scooter detail view
-  };
-
-  const handleScooterEdit = (id: number) => {
-    console.log(`Edit scooter ${id}`);
-    toast.info(`Editing scooter #${id}`);
-    // Handle scooter editing
-  };
-
-  const handleScooterDelete = (id: number) => {
-    console.log(`Delete scooter ${id}`);
-    toast.info(`Deleting scooter #${id}`);
-    // Handle scooter deletion
-  };
 
   // Render a single scooter card
   const renderScooterCard = (scooter: any) => (
     <ScooterCard
       key={scooter.id}
-      id={`No.${scooter.id}`}
-      pricePerHour={12} // Default price as it's not available in the API data
+      id={scooter.id}
+      pricePerHour={
+        scooterAndPrice.find(item => item.type === scooter.type)
+          ?.pricePerHour || 0
+      }
       type={scooter.type || 'Standard E-scooter'}
       rating={4} // Default rating as it's not available in the API data
       reviewCount={0} // Default review count as it's not available in the API data
       location={formatLocation(scooter.location)}
-      status={
-        scooter.status === 'available'
-          ? 'Available'
-          : scooter.status === 'in_use'
-            ? 'In Use'
-            : 'Maintenance'
-      }
-      onClick={() => handleScooterDetail(scooter.id)}
-      onEdit={() => handleScooterEdit(scooter.id)}
-      onDelete={() => handleScooterDelete(scooter.id)}
+      status={scooter.status}
     />
   );
 
@@ -106,6 +89,15 @@ const ListAndSettings: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Add Scooter Button */}
+        <Button 
+          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white" 
+          size="lg" 
+          onClick={() => navigate('/allocation/new-scooter')}
+        >
+          Add Scooter
+        </Button>
       </div>
     </div>
   );
