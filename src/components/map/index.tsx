@@ -56,7 +56,7 @@ const MarkerComponent: FC<{
   marker: MarkerData;
   onMarkerClick?: (marker: MarkerData) => void;
 }> = ({ marker, onMarkerClick }) => {
-  const { position, icon, popupContent } = marker;
+  const { position, icon, popupContent, id, type, status } = marker;
 
   const handleMarkerClick = () => {
     if (onMarkerClick) {
@@ -70,7 +70,18 @@ const MarkerComponent: FC<{
       icon={icon}
       eventHandlers={{ click: handleMarkerClick }}
     >
-      {popupContent && <Popup>{popupContent}</Popup>}
+      {popupContent && (
+        <Popup>
+          <div className="popup-content">
+            <div className="mb-1 text-lg font-bold">Scooter {id}</div>
+            <div className="mb-1">
+              <strong>Type:</strong> {type}
+              <br />
+              <strong>Status:</strong> {status}
+            </div>
+          </div>
+        </Popup>
+      )}
     </Marker>
   );
 };
