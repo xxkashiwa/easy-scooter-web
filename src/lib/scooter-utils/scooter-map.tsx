@@ -1,7 +1,8 @@
 import Map from '@/components/map';
 import { MarkerData } from '@/components/map/marker-layer';
+import useBoundStore from '@/stores/bound-store';
 import { useEffect, useState } from 'react';
-import useScooterStore from '../../pages/all-location/scooter-store';
+import useScooterStore from '../../stores/scooter-store';
 
 interface ScooterMapProps {
   className?: string;
@@ -14,7 +15,7 @@ const ScooterMap = ({
 }: ScooterMapProps) => {
   const { fetchScooters, fetchPrice, markers, mapCenter } = useScooterStore();
   const [loading, setLoading] = useState(true);
-
+  const { bounds } = useBoundStore();
   // Fetch scooter data when component mounts
   useEffect(() => {
     const loadData = async () => {
@@ -43,6 +44,10 @@ const ScooterMap = ({
         markers={markers}
         center={mapCenter}
         zoom={13}
+        bounds={bounds.map(bound => [
+          [bound.coordinates[0][0], bound.coordinates[0][1]],
+          [bound.coordinates[1][0], bound.coordinates[1][1]],
+        ])}
         onMarkerClick={onMarkerClick}
         className="h-full w-full"
       />

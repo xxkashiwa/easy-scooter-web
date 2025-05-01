@@ -1,14 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import HeaderWithDot from '@/components/header-with-dot';
 import Map from '@/components/map';
+import { MarkerData } from '@/components/map/marker-layer';
 import { Button } from '@/components/ui/button';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useState } from 'react';
-import useBoundStore, { Bound } from '../bound-store';
+import useBoundStore, { Bound } from '../../../stores/bound-store';
+import useScooterStore from '../../../stores/scooter-store';
 
 const NoParkingZones: React.FC = () => {
   const { bounds, addBound, deleteBound, clearBounds } = useBoundStore();
+  const { markers, mapCenter, fetchScooters, fetchPrice } = useScooterStore();
+  const [loading, setLoading] = useState(true);
   const [firstPoint, setFirstPoint] = useState<[number, number] | null>(null);
   const [currentPoint, setCurrentPoint] = useState<[number, number] | null>(
     null
@@ -31,25 +34,27 @@ const NoParkingZones: React.FC = () => {
     dashArray: '5, 10',
   };
 
+  // Load scooter data
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        await fetchScooters();
+        await fetchPrice();
+      } catch (error) {
+        console.error('Failed to fetch scooter data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fetchScooters, fetchPrice]);
+
   // Generate a new unique ID for new bounds
   const getNewId = () => {
     return bounds.length > 0 ? Math.max(...bounds.map(b => b.id)) + 1 : 1;
   };
-
-  // Mouse move handler for drawing preview
-  useEffect(() => {
-    if (!firstPoint || !drawMode) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // 需要将屏幕坐标转换为地理坐标，但这在组件外部比较复杂
-      // 我们在点击地图时更新 currentPoint 来实现预览
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [firstPoint, drawMode]);
 
   // Convert bound coordinates to LatLngBoundsExpression for the Map component
   const convertBoundsToLatLngBounds = (): L.LatLngBoundsExpression[] => {
@@ -58,7 +63,7 @@ const NoParkingZones: React.FC = () => {
       [bound.coordinates[1][0], bound.coordinates[1][1]],
     ]);
 
-    // 如果正在绘制中且有第一个点和当前点，添加预览矩形
+    // Add preview rectangle if in drawing mode with first and current points
     if (firstPoint && currentPoint && drawMode) {
       result.push([
         [firstPoint[0], firstPoint[1]],
@@ -78,15 +83,15 @@ const NoParkingZones: React.FC = () => {
     if (!firstPoint) {
       // First click - set first corner
       setFirstPoint(point);
-      setCurrentPoint(point); // 初始化当前点
+      setCurrentPoint(point); // Initialize current point
     } else {
       // Second click - create rectangle
       const newBound: Bound = {
         id: getNewId(),
-        name: `矩形区域 ${getNewId()}`,
+        name: `Rectangle Area ${getNewId()}`,
         coordinates: [firstPoint, point],
         color: defaultStyle.color,
-        description: `创建于 ${new Date().toLocaleString()}`,
+        description: `Created on ${new Date().toLocaleString()}`,
       };
 
       addBound(newBound);
@@ -95,7 +100,7 @@ const NoParkingZones: React.FC = () => {
     }
   };
 
-  // 处理地图移动（更新当前点，用于预览）
+  // Handle map movement (update current point for preview)
   const handleMapMove = (coords: { lat: number; lng: number }) => {
     if (drawMode && firstPoint) {
       setCurrentPoint([coords.lat, coords.lng]);
@@ -104,7 +109,7 @@ const NoParkingZones: React.FC = () => {
 
   // Handle clicking on a specific bound
   const handleBoundClick = (boundExpression: L.LatLngBoundsExpression) => {
-    // 如果在绘制模式，不处理选择
+    // Don't process selection if in drawing mode
     if (drawMode) return;
 
     // We need to identify which bound was clicked by matching coordinates
@@ -123,6 +128,11 @@ const NoParkingZones: React.FC = () => {
     }
   };
 
+  // Handle marker click
+  const handleMarkerClick = (marker: MarkerData) => {
+    console.log('Marker clicked:', marker);
+  };
+
   // Handle deleting the selected bound
   const handleDeleteBound = () => {
     if (selectedBoundId !== null) {
@@ -131,9 +141,9 @@ const NoParkingZones: React.FC = () => {
     }
   };
 
-  // 自定义渲染矩形的样式函数
+  // Custom style function for rectangles
   const getBoundStyle = (bound: L.LatLngBoundsExpression): L.PathOptions => {
-    // 如果是预览矩形（最后一个项）
+    // If it's a preview rectangle (last item)
     if (firstPoint && currentPoint && drawMode) {
       const previewBound = [
         [firstPoint[0], firstPoint[1]],
@@ -145,7 +155,7 @@ const NoParkingZones: React.FC = () => {
       }
     }
 
-    // 找到对应的边界ID
+    // Find the corresponding bound ID
     const boundObj = bounds.find(b => {
       const boundAsLatLng = [
         [b.coordinates[0][0], b.coordinates[0][1]],
@@ -154,7 +164,7 @@ const NoParkingZones: React.FC = () => {
       return JSON.stringify(boundAsLatLng) === JSON.stringify(bound);
     });
 
-    // 根据选中状态返回不同样式
+    // Return different styles based on selection state
     if (boundObj && boundObj.id === selectedBoundId) {
       return selectedStyle;
     }
@@ -177,14 +187,14 @@ const NoParkingZones: React.FC = () => {
           }}
           variant={drawMode ? 'destructive' : 'default'}
         >
-          {drawMode ? '取消绘制' : '绘制矩形'}
+          {drawMode ? 'Cancel Drawing' : 'Draw Rectangle'}
         </Button>
         <Button
           onClick={handleDeleteBound}
           variant="outline"
           disabled={selectedBoundId === null}
         >
-          删除选中区域
+          Delete Selected Area
         </Button>
         <Button
           onClick={() => {
@@ -193,7 +203,7 @@ const NoParkingZones: React.FC = () => {
           }}
           variant="outline"
         >
-          清除所有区域
+          Clear All Areas
         </Button>
       </div>
 
@@ -202,18 +212,25 @@ const NoParkingZones: React.FC = () => {
         <div className="mb-4 rounded-md bg-yellow-100 p-3">
           <p className="text-sm">
             {!firstPoint
-              ? '点击地图选择矩形的第一个角点'
-              : '再次点击选择矩形的第二个角点完成绘制'}
+              ? 'Click on the map to place the first corner of the rectangle'
+              : 'Click again to place the second corner and complete the rectangle'}
           </p>
         </div>
       )}
 
       {/* Map Container */}
-      <div className="min-h-[500px] flex-1 overflow-hidden rounded-lg border border-gray-300">
+      <div className="relative min-h-[500px] flex-1 overflow-hidden rounded-lg border border-gray-300">
+        {loading && (
+          <div className="bg-opacity-75 absolute inset-0 z-10 flex items-center justify-center bg-white">
+            <div className="text-blue-600">Loading...</div>
+          </div>
+        )}
         <Map
-          center={[30.76309138557076, 103.98528926875007]}
+          center={mapCenter || [30.76309138557076, 103.98528926875007]}
           zoom={15}
           className="h-full w-full"
+          markers={markers}
+          onMarkerClick={handleMarkerClick}
           onMapClick={handleMapClick}
           onMouseMove={handleMapMove}
           bounds={convertBoundsToLatLngBounds()}
@@ -224,10 +241,11 @@ const NoParkingZones: React.FC = () => {
 
       {/* Zones List */}
       <div className="mt-4">
-        <h3 className="mb-2 text-lg font-medium">矩形区域列表</h3>
+        <h3 className="mb-2 text-lg font-medium">Rectangle Areas List</h3>
         {bounds.length === 0 ? (
           <p className="text-gray-500">
-            尚未定义任何矩形区域。使用"绘制矩形"按钮创建区域。
+            No rectangle areas defined yet. Use the "Draw Rectangle" button to
+            create areas.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -246,7 +264,7 @@ const NoParkingZones: React.FC = () => {
                   {bound.description}
                 </div>
                 <div className="mt-1 text-xs text-gray-500">
-                  坐标: [{bound.coordinates[0][0].toFixed(4)},{' '}
+                  Coordinates: [{bound.coordinates[0][0].toFixed(4)},{' '}
                   {bound.coordinates[0][1].toFixed(4)}] - [
                   {bound.coordinates[1][0].toFixed(4)},{' '}
                   {bound.coordinates[1][1].toFixed(4)}]

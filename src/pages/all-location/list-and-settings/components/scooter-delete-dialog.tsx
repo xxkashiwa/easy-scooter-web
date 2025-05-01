@@ -10,7 +10,7 @@ import {
 import { deleteScooter } from '@/services/scooter-service';
 import React from 'react';
 import { toast } from 'sonner';
-import useScooterStore from '../../scooter-store';
+import useScooterStore from '../../../../stores/scooter-store';
 
 interface ScooterDeleteDialogProps {
   open: boolean;

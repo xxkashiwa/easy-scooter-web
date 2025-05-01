@@ -19,7 +19,7 @@ const Sidebar: FC = () => {
       expanded: false,
       submenuItems: [
         { label: 'List and Settings', path: '/allocation/list-and-settings' },
-        { label: 'No Parking Zones', path: '/allocation/no-parking-zones' },
+        { label: 'No Parking Zones', path: '/allocation/no-parking-zone' },
       ],
       defaultSubmenuPath: '/allocation/list-and-settings',
     },
@@ -100,9 +100,9 @@ const Sidebar: FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-[200px] bg-gradient-to-b from-blue-50 to-blue-100 flex flex-col">
+    <div className="flex min-h-screen w-[200px] flex-col bg-gradient-to-b from-blue-50 to-blue-100">
       <div className="p-4 text-xl font-bold text-blue-900">E-Scooter</div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {items.map((item, index) => (
           <SidebarItem
             key={item.path}
@@ -112,13 +112,13 @@ const Sidebar: FC = () => {
           />
         ))}
       </div>
-      
+
       {/* Special Login Button */}
-      <div 
+      <div
         onClick={handleLoginClick}
-        className="flex items-center gap-2 p-4 m-4 rounded-xl bg-blue-100 text-blue-900 font-bold cursor-pointer hover:bg-blue-200 transition-colors duration-200 shadow-sm"
+        className="m-4 flex cursor-pointer items-center gap-2 rounded-xl bg-blue-100 p-4 font-bold text-blue-900 shadow-sm transition-colors duration-200 hover:bg-blue-200"
       >
-        <LogIn className="w-6 h-6" />
+        <LogIn className="h-6 w-6" />
         <span>Login</span>
       </div>
     </div>

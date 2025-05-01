@@ -2,10 +2,10 @@
 
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
+import rentalStore from '../../stores/rental-store';
 import useBookingFormStore from './components/booking-form-store';
 import ManualBookingForm from './components/manual-booking-form';
 import OrderTable from './components/order-table';
-import rentalStore from './rental-store';
 
 const OrderList: React.FC = () => {
   const { rentals, fetchRentals, createRental, deleteRental } = rentalStore();

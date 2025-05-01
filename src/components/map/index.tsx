@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import useBoundStore from '@/stores/bound-store';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -135,6 +136,19 @@ const Map: FC<MapProps> = ({
   getBoundStyle,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const { fetchBounds } = useBoundStore();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchBounds();
+      } catch (error) {
+        console.error('Failed to fetch bounds:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Force resize on component mount
   useEffect(() => {

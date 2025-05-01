@@ -2,7 +2,7 @@ import AppLayout from '@/app-layout';
 import Allocation from '@/pages/all-location';
 import ListAndSettings from '@/pages/all-location/list-and-settings';
 import NewScooterPage from '@/pages/all-location/list-and-settings/new-scooter-page';
-import NoParkingZones from '@/pages/all-location/no-parking-zones';
+import NoParkingZones from '@/pages/all-location/no-parking-zone';
 import Discount from '@/pages/discount';
 import Fault from '@/pages/fault';
 import Home from '@/pages/home';
@@ -37,12 +37,9 @@ const AppRouter = () => {
           path="/allocation/list-and-settings"
           element={<ListAndSettings />}
         />
+        <Route path="/allocation/new-scooter" element={<NewScooterPage />} />
         <Route
-          path="/allocation/new-scooter"
-          element={<NewScooterPage />}
-        />
-        <Route
-          path="/allocation/no-parking-zones"
+          path="/allocation/no-parking-zone"
           element={<NoParkingZones />}
         />
         <Route path="/all-location" element={<Allocation />} />{' '}

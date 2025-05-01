@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import HeaderWithDot from '@/components/header-with-dot';
-import React, { useEffect, useMemo } from 'react';
-import useScooterStore from '../scooter-store';
-import ScooterCard from './components/scooter-card';
 import { Button } from '@/components/ui/button';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useScooterStore from '../../../stores/scooter-store';
+import ScooterCard from './components/scooter-card';
 
 const ListAndSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +38,6 @@ const ListAndSettings: React.FC = () => {
     );
     return { availableScooters: available, unavailableScooters: unavailable };
   }, [scooters]);
-
 
   // Render a single scooter card
   const renderScooterCard = (scooter: any) => (
@@ -89,11 +88,11 @@ const ListAndSettings: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Add Scooter Button */}
-        <Button 
-          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white" 
-          size="lg" 
+        <Button
+          className="mt-4 w-full bg-blue-500 text-white hover:bg-blue-600"
+          size="lg"
           onClick={() => navigate('/allocation/new-scooter')}
         >
           Add Scooter

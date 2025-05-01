@@ -2,7 +2,7 @@ import { MarkerData } from '@/components/map/marker-layer';
 import { getScooters, getTypeAndPrice } from '@/services/scooter-service';
 import { Scooter } from '@/services/types';
 import { create } from 'zustand';
-import { convertScooterToMarker } from '../../lib/scooter-utils/scooter-map-utils';
+import { convertScooterToMarker } from '../lib/scooter-utils/scooter-map-utils';
 
 interface ScooterStoreProps {
   scooters: Scooter[];

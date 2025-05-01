@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { putScooter, putScooterAndPrice } from '@/services/scooter-service';
 import React, { useEffect, useState } from 'react';
-import useScooterStore from '../../scooter-store';
+import useScooterStore from '../../../../stores/scooter-store';
 
 interface ScooterEditDialogProps {
   open: boolean;

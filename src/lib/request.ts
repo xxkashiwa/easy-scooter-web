@@ -6,7 +6,6 @@ export default (config: AxiosRequestConfig) => {
   const instance = axios.create({
     baseURL: API_BASE_URL,
     timeout: 60000,
-    withCredentials: false,
   });
   instance.interceptors.request.use(
     config => {
