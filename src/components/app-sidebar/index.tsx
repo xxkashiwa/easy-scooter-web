@@ -1,4 +1,12 @@
-import { Heart, Home, List, LogIn, MapPin, Wallet2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  Heart,
+  Home,
+  List,
+  LogIn,
+  MapPin,
+  Wallet2,
+} from 'lucide-react';
 import { FC, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SidebarItem from './sidebar-item';
@@ -10,7 +18,7 @@ const Sidebar: FC = () => {
   const [items, setItems] = useState<SidebarItemType[]>([
     { icon: <Home />, label: 'Home', path: '/' },
     { icon: <List />, label: 'Order List', path: '/order-list' },
-    { icon: <Home />, label: 'Fault', path: '/fault' },
+    { icon: <AlertTriangle />, label: 'Fault', path: '/fault' },
     {
       icon: <MapPin />,
       label: 'Allocation',

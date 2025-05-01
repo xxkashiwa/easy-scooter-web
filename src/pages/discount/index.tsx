@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import HeaderWithDot from '@/components/header-with-dot';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import HeaderWithDot from '@/components/header-with-dot';
-import { getCurrentRentalConfig, postRentalConfig } from '@/services/rental-config-service';
+import {
+  getCurrentRentalConfig,
+  postRentalConfig,
+} from '@/services/rental-config-service';
 import { RentalConfig } from '@/services/types';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const Discount: React.FC = () => {
   const [currentConfig, setCurrentConfig] = useState<RentalConfig | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [newConfig, setNewConfig] = useState<Omit<RentalConfig, 'id' | 'isActive'>>({
+  const [newConfig, setNewConfig] = useState<
+    Omit<RentalConfig, 'id' | 'isActive'>
+  >({
     baseHourlyRate: 0,
     oneHourRate: 0,
     fourHoursRate: 0,
@@ -76,33 +81,49 @@ const Discount: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <HeaderWithDot className="mb-6">Discount Management</HeaderWithDot>
-      
+
       {/* Current Discount Settings */}
       <div className="mb-8 rounded-lg bg-white p-6 shadow-md">
-        <HeaderWithDot className="mb-4">Current Discount Settings</HeaderWithDot>
+        <HeaderWithDot className="mb-4">
+          Current Discount Settings
+        </HeaderWithDot>
         {isLoading && !currentConfig ? (
           <p>Loading current settings...</p>
         ) : currentConfig ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">Base Hourly Rate</h3>
-              <p className="text-lg font-bold">£{currentConfig.baseHourlyRate.toFixed(2)}</p>
+              <h3 className="text-sm font-medium text-gray-600">
+                Base Hourly Rate
+              </h3>
+              <p className="text-lg font-bold">
+                £{currentConfig.baseHourlyRate.toFixed(2)}
+              </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">1 Hour Rate</h3>
-              <p className="text-lg font-bold">£{currentConfig.oneHourRate.toFixed(2)}</p>
+              <p className="text-lg font-bold">
+                £{currentConfig.oneHourRate.toFixed(2)}
+              </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">4 Hours Rate</h3>
-              <p className="text-lg font-bold">£{currentConfig.fourHoursRate.toFixed(2)}</p>
+              <h3 className="text-sm font-medium text-gray-600">
+                4 Hours Rate
+              </h3>
+              <p className="text-lg font-bold">
+                £{currentConfig.fourHoursRate.toFixed(2)}
+              </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">1 Day Rate</h3>
-              <p className="text-lg font-bold">£{currentConfig.oneDayRate.toFixed(2)}</p>
+              <p className="text-lg font-bold">
+                £{currentConfig.oneDayRate.toFixed(2)}
+              </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">1 Week Rate</h3>
-              <p className="text-lg font-bold">£{currentConfig.oneWeekRate.toFixed(2)}</p>
+              <p className="text-lg font-bold">
+                £{currentConfig.oneWeekRate.toFixed(2)}
+              </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">Description</h3>
@@ -113,14 +134,17 @@ const Discount: React.FC = () => {
           <p>No active discount settings found.</p>
         )}
       </div>
-      
+
       {/* New Discount Settings Form */}
       <div className="rounded-lg bg-white p-6 shadow-md">
         <HeaderWithDot className="mb-4">Update Discount Settings</HeaderWithDot>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label htmlFor="baseHourlyRate" className="mb-1 block text-sm font-medium">
+              <label
+                htmlFor="baseHourlyRate"
+                className="mb-1 block text-sm font-medium"
+              >
                 Base Hourly Rate (£)
               </label>
               <Input
@@ -135,7 +159,10 @@ const Discount: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="oneHourRate" className="mb-1 block text-sm font-medium">
+              <label
+                htmlFor="oneHourRate"
+                className="mb-1 block text-sm font-medium"
+              >
                 1 Hour Rate (£)
               </label>
               <Input
@@ -150,7 +177,10 @@ const Discount: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="fourHoursRate" className="mb-1 block text-sm font-medium">
+              <label
+                htmlFor="fourHoursRate"
+                className="mb-1 block text-sm font-medium"
+              >
                 4 Hours Rate (£)
               </label>
               <Input
@@ -165,7 +195,10 @@ const Discount: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="oneDayRate" className="mb-1 block text-sm font-medium">
+              <label
+                htmlFor="oneDayRate"
+                className="mb-1 block text-sm font-medium"
+              >
                 1 Day Rate (£)
               </label>
               <Input
@@ -180,7 +213,10 @@ const Discount: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="oneWeekRate" className="mb-1 block text-sm font-medium">
+              <label
+                htmlFor="oneWeekRate"
+                className="mb-1 block text-sm font-medium"
+              >
                 1 Week Rate (£)
               </label>
               <Input
@@ -196,7 +232,10 @@ const Discount: React.FC = () => {
             </div>
           </div>
           <div className="mt-4">
-            <label htmlFor="description" className="mb-1 block text-sm font-medium">
+            <label
+              htmlFor="description"
+              className="mb-1 block text-sm font-medium"
+            >
               Description
             </label>
             <Input
