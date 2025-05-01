@@ -28,4 +28,16 @@ interface Scooter {
   location: { lat: number; lng: number };
   battery: number;
 }
-export type { Fault, Rental, Scooter };
+
+interface RentalConfig {
+  id: number;
+  isActive: boolean;
+  baseHourlyRate: number;
+  oneHourRate: number;
+  fourHoursRate: number;
+  oneDayRate: number;
+  oneWeekRate: number;
+  description: string;
+}
+
+export type { Fault, Rental, RentalConfig, Scooter };
