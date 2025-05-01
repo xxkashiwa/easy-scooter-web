@@ -1,6 +1,6 @@
 import useAuthStore from '@/stores/auth-store';
 import axios, { AxiosRequestConfig } from 'axios';
-const API_BASE_URL = 'http://119.45.26.22:8222/api/v1';
+const API_BASE_URL = '/api/v1';
 
 export default (config: AxiosRequestConfig) => {
   const instance = axios.create({
