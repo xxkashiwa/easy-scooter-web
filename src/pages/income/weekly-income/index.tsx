@@ -146,7 +146,7 @@ const WeeklyIncome: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={value => [`££{value}`, 'Revenue']} />
+                  <Tooltip formatter={value => [`£${value}`, 'Revenue']} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -201,17 +201,17 @@ const WeeklyIncome: React.FC = () => {
                     fill="#8884d8"
                     dataKey="value"
                     label={({ name, percent }) =>
-                      `£{name}: £{(percent * 100).toFixed(0)}%`
+                      `${name}: ${(percent * 100).toFixed(0)}%`
                     }
                   >
                     {prepareRentalPeriodData().map((_, index) => (
                       <Cell
-                        key={`cell-£{index}`}
+                        key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
                       />
                     ))}
                   </Pie>
-                  <Tooltip formatter={value => [`££{value}`, 'Revenue']} />
+                  <Tooltip formatter={value => [`$${value}`, 'Revenue']} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
