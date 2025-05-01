@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,6 +9,7 @@ import {
   Rectangle,
   TileLayer,
   useMap,
+  useMapEvents,
 } from 'react-leaflet';
 import { MarkerData } from './marker-layer';
 import './marker-styles.css';
@@ -19,30 +21,31 @@ interface MapProps {
   markers?: MarkerData[];
   onMarkerClick?: (marker: MarkerData) => void;
   onMapClick?: (coordinates: { lat: number; lng: number }) => void;
+  onMouseMove?: (coordinates: { lat: number; lng: number }) => void;
   bounds?: L.LatLngBoundsExpression[];
   onBoundClick?: (bounds: L.LatLngBoundsExpression) => void;
+  getBoundStyle?: (bound: L.LatLngBoundsExpression) => L.PathOptions;
 }
 
-// Map click handler component
+// Map event handler component for clicks and mouse movements
 const MapEventHandler: FC<{
   onMapClick?: (coordinates: { lat: number; lng: number }) => void;
-}> = ({ onMapClick }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!onMapClick) return;
-
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      onMapClick({ lat, lng });
-    };
-
-    map.on('click', handleClick);
-
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [map, onMapClick]);
+  onMouseMove?: (coordinates: { lat: number; lng: number }) => void;
+}> = ({ onMapClick, onMouseMove }) => {
+  const map = useMapEvents({
+    click(e) {
+      if (onMapClick) {
+        const { lat, lng } = e.latlng;
+        onMapClick({ lat, lng });
+      }
+    },
+    mousemove(e) {
+      if (onMouseMove) {
+        const { lat, lng } = e.latlng;
+        onMouseMove({ lat, lng });
+      }
+    },
+  });
 
   return null;
 };
@@ -75,7 +78,8 @@ const MarkerComponent: FC<{
 const BoundsLayer: FC<{
   bounds: L.LatLngBoundsExpression[];
   onBoundClick?: (bounds: L.LatLngBoundsExpression) => void;
-}> = ({ bounds, onBoundClick }) => {
+  getBoundStyle?: (bound: L.LatLngBoundsExpression) => L.PathOptions;
+}> = ({ bounds, onBoundClick, getBoundStyle }) => {
   const [activeBounds, setActiveBounds] =
     useState<L.LatLngBoundsExpression | null>(null);
   const map = useMap();
@@ -102,7 +106,13 @@ const BoundsLayer: FC<{
         <Rectangle
           key={`bound-${index}`}
           bounds={bound}
-          pathOptions={activeBounds === bound ? activeStyle : inactiveStyle}
+          pathOptions={
+            getBoundStyle
+              ? getBoundStyle(bound)
+              : activeBounds === bound
+                ? activeStyle
+                : inactiveStyle
+          }
           eventHandlers={{
             click: () => handleBoundClick(bound),
           }}
@@ -119,8 +129,10 @@ const Map: FC<MapProps> = ({
   markers = [],
   onMarkerClick,
   onMapClick,
+  onMouseMove,
   bounds = [],
   onBoundClick,
+  getBoundStyle,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -150,7 +162,7 @@ const Map: FC<MapProps> = ({
           maxZoom={18}
         />
 
-        <MapEventHandler onMapClick={onMapClick} />
+        <MapEventHandler onMapClick={onMapClick} onMouseMove={onMouseMove} />
 
         {markers.map((marker, index) => (
           <MarkerComponent
@@ -161,7 +173,11 @@ const Map: FC<MapProps> = ({
         ))}
 
         {bounds.length > 0 && (
-          <BoundsLayer bounds={bounds} onBoundClick={onBoundClick} />
+          <BoundsLayer
+            bounds={bounds}
+            onBoundClick={onBoundClick}
+            getBoundStyle={getBoundStyle}
+          />
         )}
       </MapContainer>
     </div>
