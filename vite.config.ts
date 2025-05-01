@@ -12,12 +12,12 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      '/api': {
-        target: 'http://119.45.26.22:8222',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://119.45.26.22:8222',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    // },
   },
 });
