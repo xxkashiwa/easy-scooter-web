@@ -1,5 +1,4 @@
 import L from 'leaflet';
-import { FC, useEffect } from 'react';
 
 export interface MarkerData {
   id: number;
@@ -7,84 +6,54 @@ export interface MarkerData {
   status: string;
   type: string;
   popupContent?: string;
+  icon?: L.DivIcon | L.Icon; // Added icon property for react-leaflet
 }
 
-interface MarkerLayerProps {
-  map: L.Map | null;
-  markers: MarkerData[];
-  onMarkerClick?: (marker: MarkerData) => void;
-}
+// This helper function creates marker icons based on status
+export const createMarkerIcon = (status: string): L.DivIcon => {
+  const iconColor =
+    status === 'available'
+      ? '#10b981' // green-500
+      : status === 'in_use'
+        ? '#3b82f6' // blue-500
+        : status === 'maintenance'
+          ? '#f97316' // orange-500
+          : '#6b7280'; // gray-500
 
-const MarkerLayer: FC<MarkerLayerProps> = ({ map, markers, onMarkerClick }) => {
-  useEffect(() => {
-    // If map isn't ready or no markers, exit early
-    if (!map || !markers.length) return;
-
-    // Reference to the marker group to clean up later
-    const markerGroup = L.layerGroup().addTo(map);
-
-    // Function to get marker icon based on status
-    const getMarkerIcon = (status: string) => {
-      const iconColor =
-        status === 'available'
-          ? '#10b981' // green-500
-          : status === 'in_use'
-            ? '#3b82f6' // blue-500
-            : status === 'maintenance'
-              ? '#f97316' // orange-500
-              : '#6b7280'; // gray-500
-
-      return L.divIcon({
-        className: 'custom-marker-icon',
-        html: `<div style="width:16px;height:16px;border-radius:50%;background-color:${iconColor};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-      });
-    };
-
-    // Add each marker to the map
-    markers.forEach(markerData => {
-      const { id, position, status, type, popupContent } = markerData;
-
-      try {
-        const marker = L.marker(position, {
-          icon: getMarkerIcon(status),
-        }).addTo(markerGroup);
-
-        // Add popup if content is provided
-        if (popupContent) {
-          marker.bindPopup(popupContent);
-        } else {
-          // Create default popup content
-          const defaultContent = `
-            <div class="popup-content">
-              <div style="font-weight:bold">Scooter #${id}</div>
-              <div>Type: ${type}</div>
-              <div>Status: ${status}</div>
-            </div>
-          `;
-          marker.bindPopup(defaultContent);
-        }
-
-        // Add click handler
-        if (onMarkerClick) {
-          marker.on('click', () => {
-            onMarkerClick(markerData);
-          });
-        }
-      } catch (error) {
-        console.error(`Error adding marker for scooter #${id}:`, error);
-      }
-    });
-
-    // Cleanup function to remove markers when component unmounts
-    return () => {
-      map.removeLayer(markerGroup);
-    };
-  }, [map, markers, onMarkerClick]);
-
-  // This is just a utility component, it doesn't render anything
-  return null;
+  return L.divIcon({
+    className: 'custom-marker-icon',
+    html: `<div style="width:16px;height:16px;border-radius:50%;background-color:${iconColor};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
 };
 
-export default MarkerLayer;
+// Helper function to create default popup content
+export const createDefaultPopupContent = (marker: MarkerData): string => {
+  const { id, type, status } = marker;
+  return `
+    <div class="popup-content">
+      <div style="font-weight:bold">Scooter #${id}</div>
+      <div>Type: ${type}</div>
+      <div>Status: ${status}</div>
+    </div>
+  `;
+};
+
+// Prepare markers data with icons
+export const prepareMarkers = (markers: MarkerData[]): MarkerData[] => {
+  return markers.map(marker => {
+    // Create a new object to avoid mutating the original
+    const newMarker = { ...marker };
+
+    // Add the icon based on status
+    newMarker.icon = createMarkerIcon(marker.status);
+
+    // Add default popup content if none provided
+    if (!newMarker.popupContent) {
+      newMarker.popupContent = createDefaultPopupContent(marker);
+    }
+
+    return newMarker;
+  });
+};

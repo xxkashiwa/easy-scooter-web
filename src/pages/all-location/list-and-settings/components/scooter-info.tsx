@@ -1,9 +1,9 @@
 import React from 'react';
-import RatingStars from '../../scooter-utils/rating-stars';
+import RatingStars from '../../../../lib/scooter-utils/rating-stars';
 import {
   getFormattedStatusText,
   getStatusColor,
-} from '../../scooter-utils/status-utils';
+} from '../../../../lib/scooter-utils/status-utils';
 
 interface ScooterInfoProps {
   id: number;

@@ -1,7 +1,7 @@
 import Map from '@/components/map';
 import { MarkerData } from '@/components/map/marker-layer';
 import { useEffect, useState } from 'react';
-import useScooterStore from '../scooter-store';
+import useScooterStore from '../../pages/all-location/scooter-store';
 
 interface ScooterMapProps {
   className?: string;

@@ -1,4 +1,4 @@
-import LocationSelector from '@/pages/all-location/scooter-utils/location-selector';
+import LocationSelector from '@/lib/scooter-utils/location-selector';
 import React from 'react';
 
 interface MapContainerProps {

@@ -1,7 +1,7 @@
 import Map from '@/components/map';
 import { MarkerData } from '@/components/map/marker-layer';
 import React, { useCallback, useState } from 'react';
-import useScooterStore from '../scooter-store';
+import useScooterStore from '../../pages/all-location/scooter-store';
 
 interface LocationSelectorProps {
   onLocationSelect: (coordinates: { lat: number; lng: number }) => void;

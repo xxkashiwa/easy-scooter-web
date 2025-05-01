@@ -1,4 +1,4 @@
-import { MarkerData } from '@/components/map/marker-layer';
+import { MarkerData, createMarkerIcon } from '@/components/map/marker-layer';
 import { Scooter } from '@/services/types';
 import { getFormattedStatusText } from './status-utils';
 
@@ -11,6 +11,9 @@ export const convertScooterToMarker = (
 ): MarkerData => {
   const { id, type, status, location } = scooter;
 
+  // Use the createMarkerIcon function to get the appropriate icon based on status
+  const icon = createMarkerIcon(status);
+
   if (
     !location ||
     typeof location.lat !== 'number' ||
@@ -20,6 +23,7 @@ export const convertScooterToMarker = (
     return {
       id,
       position: [30.76309, 103.98529], // Default position
+      icon,
       status,
       type,
       popupContent: createScooterPopupContent(id, type, status, pricePerHour),
@@ -29,6 +33,7 @@ export const convertScooterToMarker = (
   return {
     id,
     position: [location.lat, location.lng],
+    icon,
     status,
     type,
     popupContent: createScooterPopupContent(id, type, status, pricePerHour),

@@ -4,6 +4,7 @@ import useAuthStore from '@/stores/auth-store';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -16,10 +17,14 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = await auth(username, password);
-    if (token) {
-      setIsAuthenticated(true);
-      setAccessToken(token);
+    try {
+
+      const token = await auth(username, password);
+        setIsAuthenticated(true);
+        setAccessToken(token);
+    } catch(e) {
+      toast.error(`Login failed. ${e}`);
+      return;
     }
     navigate('/');
   };

@@ -1,7 +1,15 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { FC, useEffect, useRef, useState } from 'react';
-import MarkerLayer, { MarkerData } from './marker-layer';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  Rectangle,
+  TileLayer,
+  useMap,
+} from 'react-leaflet';
+import { MarkerData } from './marker-layer';
 import './marker-styles.css';
 
 interface MapProps {
@@ -11,7 +19,98 @@ interface MapProps {
   markers?: MarkerData[];
   onMarkerClick?: (marker: MarkerData) => void;
   onMapClick?: (coordinates: { lat: number; lng: number }) => void;
+  bounds?: L.LatLngBoundsExpression[];
+  onBoundClick?: (bounds: L.LatLngBoundsExpression) => void;
 }
+
+// Map click handler component
+const MapEventHandler: FC<{
+  onMapClick?: (coordinates: { lat: number; lng: number }) => void;
+}> = ({ onMapClick }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!onMapClick) return;
+
+    const handleClick = (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      onMapClick({ lat, lng });
+    };
+
+    map.on('click', handleClick);
+
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [map, onMapClick]);
+
+  return null;
+};
+
+// Marker component to handle click events
+const MarkerComponent: FC<{
+  marker: MarkerData;
+  onMarkerClick?: (marker: MarkerData) => void;
+}> = ({ marker, onMarkerClick }) => {
+  const { position, icon, popupContent } = marker;
+
+  const handleMarkerClick = () => {
+    if (onMarkerClick) {
+      onMarkerClick(marker);
+    }
+  };
+
+  return (
+    <Marker
+      position={position}
+      icon={icon}
+      eventHandlers={{ click: handleMarkerClick }}
+    >
+      {popupContent && <Popup>{popupContent}</Popup>}
+    </Marker>
+  );
+};
+
+// Bounds component to handle rectangle bounds
+const BoundsLayer: FC<{
+  bounds: L.LatLngBoundsExpression[];
+  onBoundClick?: (bounds: L.LatLngBoundsExpression) => void;
+}> = ({ bounds, onBoundClick }) => {
+  const [activeBounds, setActiveBounds] =
+    useState<L.LatLngBoundsExpression | null>(null);
+  const map = useMap();
+
+  const activeStyle = useMemo(() => ({ color: 'red', weight: 2 }), []);
+  const inactiveStyle = useMemo(
+    () => ({ color: 'blue', weight: 1, opacity: 0.7 }),
+    []
+  );
+
+  const handleBoundClick = (bound: L.LatLngBoundsExpression) => {
+    setActiveBounds(bound);
+    if (map && bound) {
+      map.fitBounds(bound);
+    }
+    if (onBoundClick) {
+      onBoundClick(bound);
+    }
+  };
+
+  return (
+    <>
+      {bounds.map((bound, index) => (
+        <Rectangle
+          key={`bound-${index}`}
+          bounds={bound}
+          pathOptions={activeBounds === bound ? activeStyle : inactiveStyle}
+          eventHandlers={{
+            click: () => handleBoundClick(bound),
+          }}
+        />
+      ))}
+    </>
+  );
+};
 
 const Map: FC<MapProps> = ({
   center = [30.76309138557076, 103.98528926875007], // Default center
@@ -20,99 +119,52 @@ const Map: FC<MapProps> = ({
   markers = [],
   onMarkerClick,
   onMapClick,
+  bounds = [],
+  onBoundClick,
 }) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const [mapReady, setMapReady] = useState<boolean>(false);
-  const onMapClickRef = useRef(onMapClick);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize map
+  // Force resize on component mount
   useEffect(() => {
-    if (!mapRef.current) return;
-
-    // Clean up any existing map to prevent issues
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
-
-    try {
-      // Initialize the map
-      const mapInstance = L.map(mapRef.current, {
-        center: center,
-        zoom: zoom,
-        zoomControl: true,
-        attributionControl: true,
-      });
-
-      // Add tile layer
-      L.tileLayer(
-        'https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',
-        {
-          attribution: '© Easy Scooter',
-          maxZoom: 18,
-        }
-      ).addTo(mapInstance);
-
-      // Add click event handler if needed
-      mapInstance.on('click', (e: L.LeafletMouseEvent) => {
-        if (onMapClickRef.current) {
-          const { lat, lng } = e.latlng;
-          onMapClickRef.current({ lat, lng });
-        }
-      });
-
-      // Store the map instance
-      mapInstanceRef.current = mapInstance;
-
-      // Mark the map as ready
-      setMapReady(true);
-
-      // Force a resize after a short delay to ensure the map renders correctly
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      }, 100);
-    } catch (error) {
-      console.error('Error initializing map:', error);
-    }
-
-    // Cleanup function
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-        setMapReady(false);
+    const timer = setTimeout(() => {
+      if (mapContainerRef.current) {
+        window.dispatchEvent(new Event('resize'));
       }
-    };
-  }, []); // Remove onMapClick from dependencies
+    }, 100);
 
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <>
-      <div ref={mapRef} className={className}></div>
-      {mapReady && mapInstanceRef.current && (
-        <MarkerLayer
-          map={mapInstanceRef.current}
-          markers={markers}
-          onMarkerClick={onMarkerClick}
+    <div className={className} ref={mapContainerRef}>
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        style={{ height: '100%', width: '100%' }}
+        zoomControl={true}
+        attributionControl={true}
+      >
+        <TileLayer
+          attribution="© Easy Scooter"
+          url="https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}"
+          maxZoom={18}
         />
-      )}
-    </>
+
+        <MapEventHandler onMapClick={onMapClick} />
+
+        {markers.map((marker, index) => (
+          <MarkerComponent
+            key={`marker-${index}`}
+            marker={marker}
+            onMarkerClick={onMarkerClick}
+          />
+        ))}
+
+        {bounds.length > 0 && (
+          <BoundsLayer bounds={bounds} onBoundClick={onBoundClick} />
+        )}
+      </MapContainer>
+    </div>
   );
 };
 

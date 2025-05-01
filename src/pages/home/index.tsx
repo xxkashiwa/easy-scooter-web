@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import HeaderWithDot from '@/components/header-with-dot';
-import ScooterMap from '../all-location/scooter-utils/scooter-map';
+import ScooterMap from '../../lib/scooter-utils/scooter-map';
 
 const HomePage = () => {
   return (
