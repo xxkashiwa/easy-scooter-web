@@ -204,7 +204,7 @@ const WeeklyIncome: React.FC = () => {
                       `${name}: ${(percent * 100).toFixed(0)}%`
                     }
                   >
-                    {prepareRentalPeriodData().map((entry, index) => (
+                    {prepareRentalPeriodData().map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}

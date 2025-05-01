@@ -33,7 +33,7 @@ const MapEventHandler: FC<{
   onMapClick?: (coordinates: { lat: number; lng: number }) => void;
   onMouseMove?: (coordinates: { lat: number; lng: number }) => void;
 }> = ({ onMapClick, onMouseMove }) => {
-  const map = useMapEvents({
+  useMapEvents({
     click(e) {
       if (onMapClick) {
         const { lat, lng } = e.latlng;
