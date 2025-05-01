@@ -61,7 +61,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
         onClick={() => onEdit(rental.id)}
         size="sm"
         variant="secondary"
-        className="px-2 select-none"
+        className="hidden px-2 select-none"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -40,4 +40,52 @@ interface RentalConfig {
   description: string;
 }
 
-export type { Fault, Rental, RentalConfig, Scooter };
+interface RevenueByPeriod {
+  '1hr': {
+    count: number;
+    revenue: number;
+    average?: number;
+  };
+  '4hrs': {
+    count: number;
+    revenue: number;
+    average?: number;
+  };
+  '1day': {
+    count: number;
+    revenue: number;
+    average?: number;
+  };
+  '1week': {
+    count: number;
+    revenue: number;
+    average?: number;
+  };
+}
+
+interface DailyStats {
+  data: string;
+  totalRevenue: number;
+  retalCount: number;
+  revenueByPeriod: RevenueByPeriod;
+}
+
+interface PeriodStats {
+  startDate: string;
+  endDate: string;
+  totalRevenue: number;
+  totalRentals: number;
+  dailyAverage: number;
+  revenueByPeriod: RevenueByPeriod;
+  dailyStats: DailyStats[];
+}
+
+export type {
+  DailyStats,
+  Fault,
+  PeriodStats,
+  Rental,
+  RentalConfig,
+  RevenueByPeriod,
+  Scooter,
+};
