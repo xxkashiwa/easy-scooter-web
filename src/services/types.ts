@@ -37,6 +37,8 @@ interface RentalConfig {
   fourHoursRate: number;
   oneDayRate: number;
   oneWeekRate: number;
+  studentDiscount: number;
+  oldDiscount: number;
   description: string;
 }
 

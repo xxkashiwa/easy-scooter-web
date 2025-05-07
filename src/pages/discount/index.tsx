@@ -9,12 +9,6 @@ import { RentalConfig } from '@/services/types';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-// Add interface for local discounts
-interface LocalDiscounts {
-  seniorDiscount: number;
-  studentDiscount: number;
-}
-
 const Discount: React.FC = () => {
   const [currentConfig, setCurrentConfig] = useState<RentalConfig | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,45 +20,14 @@ const Discount: React.FC = () => {
     fourHoursRate: 0,
     oneDayRate: 0,
     oneWeekRate: 0,
+    studentDiscount: 0,
+    oldDiscount: 0,
     description: '',
-  });
-
-  // Add state for local discounts
-  const [localDiscounts, setLocalDiscounts] = useState<LocalDiscounts>({
-    seniorDiscount: 0.9,
-    studentDiscount: 0.9,
   });
 
   useEffect(() => {
     fetchCurrentConfig();
-    // Load local discounts from localStorage
-    loadLocalDiscounts();
   }, []);
-
-  const loadLocalDiscounts = () => {
-    const savedDiscounts = localStorage.getItem('localDiscounts');
-    if (savedDiscounts) {
-      try {
-        const parsedDiscounts = JSON.parse(savedDiscounts) as LocalDiscounts;
-        setLocalDiscounts(parsedDiscounts);
-      } catch (error) {
-        console.error(
-          'Error parsing local discounts from localStorage:',
-          error
-        );
-        // Initialize with default values if parsing fails
-        setLocalDiscounts({
-          seniorDiscount: 0.9,
-          studentDiscount: 0.9,
-        });
-      }
-    }
-  };
-
-  // Function to save local discounts to localStorage
-  const saveLocalDiscounts = (discounts: LocalDiscounts) => {
-    localStorage.setItem('localDiscounts', JSON.stringify(discounts));
-  };
 
   const fetchCurrentConfig = async () => {
     try {
@@ -78,6 +41,8 @@ const Discount: React.FC = () => {
         fourHoursRate: config.fourHoursRate,
         oneDayRate: config.oneDayRate,
         oneWeekRate: config.oneWeekRate,
+        studentDiscount: config.studentDiscount || 0,
+        oldDiscount: config.oldDiscount || 0,
         description: config.description,
       });
     } catch (error) {
@@ -92,11 +57,10 @@ const Discount: React.FC = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      // Save local discounts to localStorage when form is submitted
-      saveLocalDiscounts(localDiscounts);
 
       await postRentalConfig({
         ...newConfig,
+        baseHourlyRate: 1.0,
         id: 0, // ID will be assigned by the server
         isActive: true,
       });
@@ -134,14 +98,6 @@ const Discount: React.FC = () => {
         ) : currentConfig ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">
-                Base Hourly Rate
-              </h3>
-              <p className="text-lg font-bold">
-                £{currentConfig.baseHourlyRate.toFixed(2)}
-              </p>
-            </div>
-            <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">1 Hour Rate</h3>
               <p className="text-lg font-bold">
                 £{currentConfig.oneHourRate.toFixed(2)}
@@ -168,28 +124,22 @@ const Discount: React.FC = () => {
               </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
+              <h3 className="text-sm font-medium text-gray-600">
+                Student Rate
+              </h3>
+              <p className="text-lg font-bold">
+                {currentConfig.studentDiscount.toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-md bg-gray-50 p-4">
+              <h3 className="text-sm font-medium text-gray-600">Old Rate</h3>
+              <p className="text-lg font-bold">
+                {currentConfig.oldDiscount.toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">Description</h3>
               <p className="text-sm">{currentConfig.description}</p>
-            </div>
-
-            {/* Senior Discount Display */}
-            <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">
-                Senior Discount
-              </h3>
-              <p className="text-lg font-bold">
-                {(localDiscounts.seniorDiscount * 100).toFixed(0)}%
-              </p>
-            </div>
-
-            {/* Student Discount Display */}
-            <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">
-                Student Discount
-              </h3>
-              <p className="text-lg font-bold">
-                {(localDiscounts.studentDiscount * 100).toFixed(0)}%
-              </p>
             </div>
           </div>
         ) : (
@@ -202,24 +152,6 @@ const Discount: React.FC = () => {
         <HeaderWithDot className="mb-4">Update Discount Settings</HeaderWithDot>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <label
-                htmlFor="baseHourlyRate"
-                className="mb-1 block text-sm font-medium"
-              >
-                Base Hourly Rate (£)
-              </label>
-              <Input
-                type="number"
-                id="baseHourlyRate"
-                name="baseHourlyRate"
-                step="0.01"
-                min="0"
-                value={newConfig.baseHourlyRate}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
             <div>
               <label
                 htmlFor="oneHourRate"
@@ -292,6 +224,42 @@ const Discount: React.FC = () => {
                 required
               />
             </div>
+            <div>
+              <label
+                htmlFor="studentDiscount"
+                className="mb-1 block text-sm font-medium"
+              >
+                Student Rate
+              </label>
+              <Input
+                type="number"
+                id="studentDiscount"
+                name="studentDiscount"
+                step="0.01"
+                min="0"
+                value={newConfig.studentDiscount}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="oldDiscount"
+                className="mb-1 block text-sm font-medium"
+              >
+                Old Rate
+              </label>
+              <Input
+                type="number"
+                id="oldDiscount"
+                name="oldDiscount"
+                step="0.01"
+                min="0"
+                value={newConfig.oldDiscount}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
           <div className="mt-4">
             <label
@@ -308,62 +276,6 @@ const Discount: React.FC = () => {
               onChange={handleInputChange}
               placeholder="Describe this discount configuration"
               className="w-full"
-            />
-          </div>
-
-          {/* Senior Discount Field */}
-          <div className="mt-4">
-            <label
-              htmlFor="seniorDiscount"
-              className="mb-1 block text-sm font-medium"
-            >
-              Senior Discount (%)
-            </label>
-            <Input
-              type="number"
-              id="seniorDiscount"
-              name="seniorDiscount"
-              step="0.01"
-              min="0"
-              max="1"
-              value={localDiscounts.seniorDiscount}
-              onChange={e => {
-                const value = parseFloat(e.target.value) || 0;
-                const newDiscounts = {
-                  ...localDiscounts,
-                  seniorDiscount: value,
-                };
-                setLocalDiscounts(newDiscounts);
-              }}
-              required
-            />
-          </div>
-
-          {/* Student Discount Field */}
-          <div className="mt-4">
-            <label
-              htmlFor="studentDiscount"
-              className="mb-1 block text-sm font-medium"
-            >
-              Student Discount (%)
-            </label>
-            <Input
-              type="number"
-              id="studentDiscount"
-              name="studentDiscount"
-              step="0.01"
-              min="0"
-              max="1"
-              value={localDiscounts.studentDiscount}
-              onChange={e => {
-                const value = parseFloat(e.target.value) || 0;
-                const newDiscounts = {
-                  ...localDiscounts,
-                  studentDiscount: value,
-                };
-                setLocalDiscounts(newDiscounts);
-              }}
-              required
             />
           </div>
 
