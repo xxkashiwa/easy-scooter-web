@@ -19,6 +19,7 @@ interface Fault {
   status: string;
   createdAt: string;
   userName?: string;
+  image?: string;
 }
 
 interface Scooter {
