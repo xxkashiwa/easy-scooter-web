@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import React from 'react';
+import QRCode from 'react-qr-code';
 import RatingStars from '../../../../lib/scooter-utils/rating-stars';
 import {
   getFormattedStatusText,
@@ -35,6 +36,17 @@ const ScooterDetailsDialog: React.FC<ScooterDetailsDialogProps> = ({
   location,
   status,
 }) => {
+  // Convert scooter details to JSON format for QR code
+  const scooterDetailsJson = JSON.stringify({
+    id,
+    type,
+    pricePerHour,
+    rating,
+    reviewCount,
+    location,
+    status,
+  }, null, 2);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -77,6 +89,15 @@ const ScooterDetailsDialog: React.FC<ScooterDetailsDialogProps> = ({
                 {getFormattedStatusText(status)}
               </span>
             </div>
+          </div>
+          
+          {/* QR Code Section */}
+          <div className="mt-4 flex flex-col items-center justify-center gap-3">
+            <p className="font-medium">Scooter QR Code</p>
+            <div className="p-4 bg-white rounded-lg">
+              <QRCode value={scooterDetailsJson} size={180} />
+            </div>
+            <p className="text-xs text-gray-500">Scan for scooter details</p>
           </div>
         </div>
       </DialogContent>

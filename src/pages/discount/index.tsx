@@ -20,6 +20,8 @@ const Discount: React.FC = () => {
     fourHoursRate: 0,
     oneDayRate: 0,
     oneWeekRate: 0,
+    studentDiscount: 0,
+    oldDiscount: 0,
     description: '',
   });
 
@@ -39,6 +41,8 @@ const Discount: React.FC = () => {
         fourHoursRate: config.fourHoursRate,
         oneDayRate: config.oneDayRate,
         oneWeekRate: config.oneWeekRate,
+        studentDiscount: config.studentDiscount || 0,
+        oldDiscount: config.oldDiscount || 0,
         description: config.description,
       });
     } catch (error) {
@@ -53,8 +57,10 @@ const Discount: React.FC = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
+
       await postRentalConfig({
         ...newConfig,
+        baseHourlyRate: 1.0,
         id: 0, // ID will be assigned by the server
         isActive: true,
       });
@@ -92,14 +98,6 @@ const Discount: React.FC = () => {
         ) : currentConfig ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-md bg-gray-50 p-4">
-              <h3 className="text-sm font-medium text-gray-600">
-                Base Hourly Rate
-              </h3>
-              <p className="text-lg font-bold">
-                £{currentConfig.baseHourlyRate.toFixed(2)}
-              </p>
-            </div>
-            <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">1 Hour Rate</h3>
               <p className="text-lg font-bold">
                 £{currentConfig.oneHourRate.toFixed(2)}
@@ -126,6 +124,20 @@ const Discount: React.FC = () => {
               </p>
             </div>
             <div className="rounded-md bg-gray-50 p-4">
+              <h3 className="text-sm font-medium text-gray-600">
+                Student Rate
+              </h3>
+              <p className="text-lg font-bold">
+                {currentConfig.studentDiscount.toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-md bg-gray-50 p-4">
+              <h3 className="text-sm font-medium text-gray-600">Old Rate</h3>
+              <p className="text-lg font-bold">
+                {currentConfig.oldDiscount.toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-md bg-gray-50 p-4">
               <h3 className="text-sm font-medium text-gray-600">Description</h3>
               <p className="text-sm">{currentConfig.description}</p>
             </div>
@@ -140,24 +152,6 @@ const Discount: React.FC = () => {
         <HeaderWithDot className="mb-4">Update Discount Settings</HeaderWithDot>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <label
-                htmlFor="baseHourlyRate"
-                className="mb-1 block text-sm font-medium"
-              >
-                Base Hourly Rate (£)
-              </label>
-              <Input
-                type="number"
-                id="baseHourlyRate"
-                name="baseHourlyRate"
-                step="0.01"
-                min="0"
-                value={newConfig.baseHourlyRate}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
             <div>
               <label
                 htmlFor="oneHourRate"
@@ -230,6 +224,42 @@ const Discount: React.FC = () => {
                 required
               />
             </div>
+            <div>
+              <label
+                htmlFor="studentDiscount"
+                className="mb-1 block text-sm font-medium"
+              >
+                Student Rate
+              </label>
+              <Input
+                type="number"
+                id="studentDiscount"
+                name="studentDiscount"
+                step="0.01"
+                min="0"
+                value={newConfig.studentDiscount}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="oldDiscount"
+                className="mb-1 block text-sm font-medium"
+              >
+                Old Rate
+              </label>
+              <Input
+                type="number"
+                id="oldDiscount"
+                name="oldDiscount"
+                step="0.01"
+                min="0"
+                value={newConfig.oldDiscount}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
           <div className="mt-4">
             <label
@@ -248,6 +278,7 @@ const Discount: React.FC = () => {
               className="w-full"
             />
           </div>
+
           <Button
             type="submit"
             className="mt-4 bg-blue-600 hover:bg-blue-700"

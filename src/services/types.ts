@@ -19,6 +19,7 @@ interface Fault {
   status: string;
   createdAt: string;
   userName?: string;
+  image?: string;
 }
 
 interface Scooter {
@@ -37,6 +38,8 @@ interface RentalConfig {
   fourHoursRate: number;
   oneDayRate: number;
   oneWeekRate: number;
+  studentDiscount: number;
+  oldDiscount: number;
   description: string;
 }
 

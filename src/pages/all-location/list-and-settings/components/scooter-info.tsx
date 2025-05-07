@@ -41,7 +41,7 @@ const ScooterInfo: React.FC<ScooterInfoProps> = ({
         {/* Price and location */}
         <div className="mr-2 flex flex-col items-end">
           <div className="mb-1 text-xl font-semibold text-gray-900">
-            ¥ {pricePerHour}/h
+            £ {pricePerHour}/h
           </div>
           <div className="flex items-center text-xs text-gray-600">
             <svg

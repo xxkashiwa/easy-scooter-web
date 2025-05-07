@@ -102,7 +102,7 @@ const WeeklyIncome: React.FC = () => {
                 Total Revenue
               </h3>
               <p className="text-2xl font-bold">
-                ${weeklyStats.totalRevenue.toFixed(2)}
+                £{weeklyStats.totalRevenue.toFixed(2)}
               </p>
             </div>
             <div className="rounded-lg bg-white p-4 shadow">
@@ -116,7 +116,7 @@ const WeeklyIncome: React.FC = () => {
                 Daily Average
               </h3>
               <p className="text-2xl font-bold">
-                ${weeklyStats.dailyAverage.toFixed(2)}
+                £{weeklyStats.dailyAverage.toFixed(2)}
               </p>
             </div>
             <div className="rounded-lg bg-white p-4 shadow">
@@ -124,7 +124,7 @@ const WeeklyIncome: React.FC = () => {
                 Avg Revenue/Rental
               </h3>
               <p className="text-2xl font-bold">
-                $
+                £
                 {weeklyStats.totalRentals > 0
                   ? (
                       weeklyStats.totalRevenue / weeklyStats.totalRentals
@@ -146,7 +146,7 @@ const WeeklyIncome: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={value => [`$${value}`, 'Revenue']} />
+                  <Tooltip formatter={value => [`£${value}`, 'Revenue']} />
                   <Legend />
                   <Line
                     type="monotone"
