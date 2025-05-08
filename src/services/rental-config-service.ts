@@ -13,6 +13,8 @@ const mapToRentalConfig = (data: any): RentalConfig => ({
   oneDayRate: data.period_discounts['1day'],
   oneWeekRate: data.period_discounts['1week'],
   description: data.description,
+  studentDiscount: data.student_discount,
+  oldDiscount: data.old_discount,
 });
 
 const getCurrentRentalConfig = async () => {
@@ -35,6 +37,8 @@ const postRentalConfig = async (data: RentalConfig) => {
         '1day': data.oneDayRate,
         '1week': data.oneWeekRate,
       },
+      student_discount: data.studentDiscount,
+      old_discount: data.oldDiscount,
       description: data.description,
     },
   });

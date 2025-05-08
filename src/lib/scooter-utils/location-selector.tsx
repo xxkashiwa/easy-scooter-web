@@ -1,5 +1,5 @@
 import Map from '@/components/map';
-import { MarkerData } from '@/components/map/marker-layer';
+import { MarkerData, prepareMarkers } from '@/components/map/marker-layer';
 import React, { useCallback, useState } from 'react';
 import useScooterStore from '../../stores/scooter-store';
 
@@ -46,8 +46,8 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   // Combine markers from store with the temporary selection marker if it exists
   const displayMarkers = selectionMarker
-    ? [...markers, selectionMarker]
-    : markers;
+    ? prepareMarkers([...markers, selectionMarker])
+    : prepareMarkers(markers);
 
   return (
     <div className={className}>

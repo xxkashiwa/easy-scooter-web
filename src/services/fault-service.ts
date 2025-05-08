@@ -15,6 +15,7 @@ const mapToFaultType = (data: any): Fault => ({
   status: data.status,
   createdAt: data.created_at,
   userName: data.user_name,
+  image: data.image,
 });
 
 const getFaults = async (): Promise<Fault[]> => {
@@ -34,4 +35,21 @@ const resolveFault = async (id: number, notes = 'admin resolved') => {
     method: 'post',
   });
 };
-export { getFaults, resolveFault };
+
+const deleteFault = async (id: number) => {
+  await request({
+    url: `${endPoint}/${id}`,
+    method: 'delete',
+  });
+};
+
+const putFault = async (id: number, priority: string) => {
+  await request({
+    url: `${endPoint}/${id}`,
+    method: 'put',
+    data: {
+      priority,
+    },
+  });
+};
+export { deleteFault, getFaults, putFault, resolveFault };
