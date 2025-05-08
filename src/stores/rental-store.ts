@@ -2,6 +2,7 @@ import {
   deleteRental,
   getRentals,
   postRental,
+  putRental,
 } from '@/services/rental-service';
 import { Rental } from '@/services/types';
 import { create } from 'zustand';
@@ -11,6 +12,11 @@ interface RentalStoreProps {
   fetchRentals: () => Promise<void>;
   createRental: (
     scooterId: number,
+    startTime: string,
+    period: '1hr' | '4hrs' | '1day' | '1week'
+  ) => Promise<void>;
+  updateRental: (
+    id: number,
     startTime: string,
     period: '1hr' | '4hrs' | '1day' | '1week'
   ) => Promise<void>;
@@ -27,6 +33,10 @@ const rentalStore = create<RentalStoreProps>((set, get) => ({
   },
   createRental: async (scooterId, startTime, period) => {
     await postRental(scooterId, startTime, period);
+    await get().fetchRentals();
+  },
+  updateRental: async (id, startTime, period) => {
+    await putRental(id, startTime, period);
     await get().fetchRentals();
   },
   deleteRental: async id => {

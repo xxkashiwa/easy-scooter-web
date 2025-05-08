@@ -50,4 +50,18 @@ const deleteRental = async (id: number) => {
   });
 };
 
-export { deleteRental, getRentals, postRental };
+const putRental = async (
+  id: number,
+  startTime: string,
+  period: '1hr' | '4hrs' | '1day' | '1week'
+) => {
+  await request({
+    url: `${endPoint}/${id}`,
+    method: 'put',
+    data: {
+      start_time: startTime,
+      rental_period: period,
+    },
+  });
+};
+export { deleteRental, getRentals, postRental, putRental };

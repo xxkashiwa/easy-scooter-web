@@ -57,11 +57,12 @@ const OrderTable: React.FC<OrderTableProps> = ({
   // Define action buttons for each row
   const renderActions = (rental: Rental) => (
     <div className="flex justify-center gap-2">
+      {' '}
       <Button
         onClick={() => onEdit(rental.id)}
         size="sm"
         variant="secondary"
-        className="hidden px-2 select-none"
+        className="px-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
